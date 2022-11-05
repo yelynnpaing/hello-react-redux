@@ -1,25 +1,64 @@
-import logo from './logo.svg';
 import './App.css';
+import { createRef } from 'react';
+import { connect } from 'react-redux';
 
-function App() {
+const Item = ({name, price}) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <li>
+      {name}, 
+      ${price}
+    </li>
+  )
 }
 
-export default App;
+const App = props => {
+  const nameRef = createRef();
+  const priceRef = createRef();
+
+const Add = () => {
+    props.Add (
+      props.items.length + 1,
+      nameRef.current.value,
+      priceRef.current.value
+    )
+  }
+
+  return (
+    <div>
+      <ul className='App-header'>
+        {props.items.map(i => (
+          <Item 
+            key={i.id}
+            name = {i.name}
+            price = {i.price}
+          />
+        )
+        )}
+        <input type="text" ref={nameRef} /> <br/>
+        <input type="text" ref={priceRef} /> <br/>
+        <button onClick={Add}>Add</button>
+      </ul>
+    </div>
+  )
+};
+
+const stateToProps = state => {
+  return {
+    items : state
+  }
+}
+
+const dispatchToProps = dispatch => {
+  return {
+    Add:(id, name, price) =>{
+      dispatch({
+        type : 'ADD',
+        item : {id ,name , price}
+      })
+    }
+  }
+}
+
+const ReduxApp = connect(stateToProps, dispatchToProps)(App);
+
+export default ReduxApp;
